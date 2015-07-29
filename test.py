@@ -37,7 +37,7 @@ def main():
     os.system(cmd)
 
     # delete temp unit file
-    os.system('rm -fr {0}'.format(service_filename))
+    os.remove(service_filename)
 
 def parse_input():
     parser = argparse.ArgumentParser(description='create and submit unit files to the coreOS cluster')
