@@ -23,7 +23,7 @@ def main():
     components = []
     for component in cfg['services'][0]['components']:
         components.append(component)
-        print component
+        #print component
 
     if args.action == 'start':
 
