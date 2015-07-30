@@ -1,5 +1,18 @@
-python test.py -h  -  for basic help
+basic help:
 
-python test.py config.cfg - launch a helloWorld container
+```
+$ python test2.py -h
+usage: test2.py [-h] {start,stop,status} cfgfile
+
+create and submit unit files to the coreOS cluster
+
+positional arguments:
+  {start,stop,status}  choose the desired action
+  cfgfile              config file
+
+optional arguments:
+  -h, --help           show this help message and exit
+```
+
 
   
