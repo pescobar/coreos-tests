@@ -85,7 +85,7 @@ def main():
 def parse_input():
     parser = argparse.ArgumentParser(description='create and submit unit files to the coreOS cluster')
     parser.add_argument('--action', '-a', choices=['start', 'stop', 'status'], default='status', help='choose the desired action')
-    parser.add_argument('--cfgfile', '-c', type=argparse.FileType('r'), help='config file')
+    parser.add_argument('--cfgfile', '-c', type=argparse.FileType('r'), help='config file', required = True)
     parser.add_argument('--environment', '-e', choices=['prod', 'dev'], default='prod', help='choose the environment to use')
     return parser.parse_args()
 
@@ -109,9 +109,9 @@ ExecStart=/usr/bin/docker run --link {{ dependency_name }}:{{ dependency_name }}
 ExecStart=/usr/bin/docker run --name {{ component_name }} -p {{ ports }}:{{ ports }} {{ image }}
 {% endif %}
 
-ExecStartPost=/usr/bin/etcdctl set /domains/{{ domains }}/%H:{{ external_port }} running
+ExecStartPost=/usr/bin/etcdctl set /domains/%H/{{ domains }}:{{ external_port }} running
 ExecStop=/usr/bin/docker stop {{ component_name }}
-ExecStopPost=/usr/bin/etcdctl rm /domains/{{ domains }}/%H:{{ external_port }}
+ExecStopPost=/usr/bin/etcdctl rm /domains/%H/{{ domains }}:{{ external_port }}
 
 [X-Fleet]
 MachineMetadata=env={{ environment }}
