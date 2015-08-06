@@ -81,6 +81,10 @@ def main():
         for component in components:
             cmd = 'fleetctl stop {0}-{1}.service'.format(service_name, component['component_name'])
             stdout, stderr, retcode = run_cmd(cmd)
+            cmd = 'fleetctl unload {0}-{1}.service'.format(service_name, component['component_name'])
+            stdout, stderr, retcode = run_cmd(cmd)
+            cmd = 'fleetctl destroy {0}-{1}.service'.format(service_name, component['component_name'])
+            stdout, stderr, retcode = run_cmd(cmd)
 
 def parse_input():
     parser = argparse.ArgumentParser(description='create and submit unit files to the coreOS cluster')
@@ -109,9 +113,11 @@ ExecStart=/usr/bin/docker run --link {{ dependency_name }}:{{ dependency_name }}
 ExecStart=/usr/bin/docker run --name {{ component_name }} -p {{ ports }}:{{ ports }} {{ image }}
 {% endif %}
 
-ExecStartPost=/usr/bin/etcdctl set /domains/%H/{{ domains }}:{{ external_port }} running
+{% if domains is defined %}
+ExecStartPost=/usr/bin/etcdctl set /domains/%H:{{ ports }}/{{ domains }}:{{ external_port }} running
 ExecStop=/usr/bin/docker stop {{ component_name }}
-ExecStopPost=/usr/bin/etcdctl rm /domains/%H/{{ domains }}:{{ external_port }}
+ExecStopPost=/usr/bin/etcdctl rm --recursive /domains/%H:{{ ports }}
+{% endif %}
 
 [X-Fleet]
 MachineMetadata=env={{ environment }}
