@@ -32,6 +32,7 @@ def main():
 
             # do the replacement in the template
             template = Template(get_jinja2_template())
+            component['environment'] = args.environment
             if 'dependencies' in component.keys():
                 component['dependency_name'] = component['dependencies'][0]['name']
                 component['dependency_service_name'] = service_name + '-' + component['dependencies'][0]['name']
@@ -85,6 +86,7 @@ def parse_input():
     parser = argparse.ArgumentParser(description='create and submit unit files to the coreOS cluster')
     parser.add_argument('action', choices=['start', 'stop', 'status'], default='status', help='choose the desired action')
     parser.add_argument('cfgfile', type=argparse.FileType('r'), help='config file')
+    parser.add_argument('environment', choices=['prod', 'dev'], default='prod', help='choose the environment to use')
     return parser.parse_args()
 
 def get_jinja2_template():
@@ -111,8 +113,9 @@ ExecStartPost=/usr/bin/etcdctl set /domains/{{ domains }}/%H:{{ ports }} running
 ExecStop=/usr/bin/docker stop {{ component_name }}
 ExecStopPost=/usr/bin/etcdctl rm /domains/{{ domains }}/%H:{{ ports }}
 
-{% if dependency_service_name is defined %}
 [X-Fleet]
+MachineMetadata=env={{ environment }}
+{% if dependency_service_name is defined %}
 MachineOf={{ dependency_service_name }}.service
 {% endif %}
 
