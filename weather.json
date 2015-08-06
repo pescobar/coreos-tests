@@ -8,7 +8,7 @@
         {
           "component_name": "flask",
           "image": "luebken/currentweather",
-          "ports": 5000,
+          "ports": 1337,
           "dependencies": [
             {
               "name": "redis",
