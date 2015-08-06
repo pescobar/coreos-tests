@@ -15,7 +15,7 @@
               "port": 6379
             }
           ],
-          "domains": "currentweather-.gigantic.io",
+          "domains": "currentweather.com",
           "external_port": 80
         },
         {
