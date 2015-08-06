@@ -79,7 +79,7 @@ def main():
 
     if args.action == 'stop':
         for component in components:
-            cmd = 'fleetctl unload {0}-{1}.service'.format(service_name, component['component_name'])
+            cmd = 'fleetctl stop {0}-{1}.service'.format(service_name, component['component_name'])
             stdout, stderr, retcode = run_cmd(cmd)
 
 def parse_input():
