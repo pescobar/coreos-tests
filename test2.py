@@ -84,9 +84,9 @@ def main():
 
 def parse_input():
     parser = argparse.ArgumentParser(description='create and submit unit files to the coreOS cluster')
-    parser.add_argument('action', choices=['start', 'stop', 'status'], default='status', help='choose the desired action')
-    parser.add_argument('cfgfile', type=argparse.FileType('r'), help='config file')
-    parser.add_argument('environment', choices=['prod', 'dev'], default='prod', help='choose the environment to use')
+    parser.add_argument('--action', '-a', choices=['start', 'stop', 'status'], default='status', help='choose the desired action')
+    parser.add_argument('--cfgfile', '-c', type=argparse.FileType('r'), help='config file')
+    parser.add_argument('--environment', '-e', choices=['prod', 'dev'], default='prod', help='choose the environment to use')
     return parser.parse_args()
 
 def get_jinja2_template():
