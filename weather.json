@@ -15,7 +15,8 @@
               "port": 6379
             }
           ],
-          "domains": "currentweather-.gigantic.io"
+          "domains": "currentweather-.gigantic.io",
+          "external_port": 80
         },
         {
           "component_name": "redis",

@@ -8,7 +8,8 @@
                     "component_name": "helloworld-component",
                     "image": "giantswarm/helloworld",
                     "ports": 8080,
-                    "domains": "domain1.com"
+                    "domains": "domain1.com",
+                    "external_port": 80
                 }
             ]
         }
