@@ -104,14 +104,14 @@ ExecStartPre=-/usr/bin/docker rm {{ component_name }}
 ExecStartPre=/usr/bin/docker pull {{ image }}
 
 {% if dependency_name is defined %}
-ExecStart=/usr/bin/docker run --link {{ dependency_name }}:{{ dependency_name }} --name {{ component_name }} -p {{ ports }}:8080 {{ image }}
+ExecStart=/usr/bin/docker run --link {{ dependency_name }}:{{ dependency_name }} --name {{ component_name }} -p {{ ports }}:{{ ports }} {{ image }}
 {% else %}
-ExecStart=/usr/bin/docker run --name {{ component_name }} -p {{ ports }}:8080 {{ image }}
+ExecStart=/usr/bin/docker run --name {{ component_name }} -p {{ ports }}:{{ ports }} {{ image }}
 {% endif %}
 
-ExecStartPost=/usr/bin/etcdctl set /domains/{{ domains }}/%H:{{ ports }} running
+ExecStartPost=/usr/bin/etcdctl set /domains/{{ domains }}/%H:{{ external_port }} running
 ExecStop=/usr/bin/docker stop {{ component_name }}
-ExecStopPost=/usr/bin/etcdctl rm /domains/{{ domains }}/%H:{{ ports }}
+ExecStopPost=/usr/bin/etcdctl rm /domains/{{ domains }}/%H:{{ external_port }}
 
 [X-Fleet]
 MachineMetadata=env={{ environment }}
