@@ -1,14 +1,14 @@
 basic help:
 
 ```
-$ python test2.py -h
-usage: test2.py [-h] {start,stop,status} cfgfile
+usage: test2.py [-h] {start,stop,status} cfgfile {prod,dev}
 
 create and submit unit files to the coreOS cluster
 
 positional arguments:
   {start,stop,status}  choose the desired action
   cfgfile              config file
+  {prod,dev}           choose the environment to use
 
 optional arguments:
   -h, --help           show this help message and exit
@@ -18,9 +18,9 @@ Environment:
 ```
 $ fleetctl list-machines
 MACHINE		IP		METADATA
-2f17a18a...	172.17.8.102	-
-871d7b89...	172.17.8.101	-
-e8437b0c...	172.17.8.103	-
+0d86b0d6...	172.17.8.102	env=prod
+2dcc717c...	172.17.8.101	env=prod
+39183cce...	172.17.8.103	env=dev
 
 $ fleetctl list-unit-files
 UNIT	HASH	DSTATE	STATE	TARGET
@@ -39,19 +39,19 @@ Lauch a container:
 (unit files are keep in /tmp/)
 
 ```
-$ python test2.py start hello.json
+$ python test2.py start hello.json prod
 Unit helloworld-service-helloworld-component.service launched on 2f17a18a.../172.17.8.102
 
-$ python test2.py status hello.json
+$ python test2.py status hello.json prod
 helloworld-service-helloworld-component.service	2f17a18a.../172.17.8.102	active	running
 
 $ fleetctl journal --lines=1 helloworld-service-helloworld-component.service
 -- Logs begin at Wed 2015-07-29 18:55:39 UTC, end at Thu 2015-07-30 17:18:05 UTC. --
 Jul 30 17:17:18 core-02 docker[30229]: 2015/07/30 17:17:18 Starting up at :8080
 
-$ python test2.py stop hello.json
+$ python test2.py stop hello.json prod
 
-$ python test2.py status hello.json
+$ python test2.py status hello.json prod
 container not running
 ```
 
@@ -59,12 +59,12 @@ Lauch a POD:
 (unit files are keep in /tmp/)
 
 ```
-$ python test2.py start weather.json
+$ python test2.py start weather.json prod
 Unit currentweather-service-redis.service launched on 2f17a18a.../172.17.8.102
 Unit currentweather-service-flask.service launched on 2f17a18a.../172.17.8.102
  
 
-$ python test2.py status weather.json
+$ python test2.py status weather.json prod
 currentweather-service-flask.service	2f17a18a.../172.17.8.102	active	running
 currentweather-service-redis.service	2f17a18a.../172.17.8.102	active	running
 
@@ -76,8 +76,8 @@ $ fleetctl journal --lines=1 currentweather-service-flask.service
 -- Logs begin at Wed 2015-07-29 18:55:39 UTC, end at Thu 2015-07-30 17:20:47 UTC. --
 Jul 30 17:19:31 core-02 docker[30503]: Server running at http://0.0.0.0:1337/
 
-$ python test2.py stop weather.json
-$ python test2.py status weather.json
+$ python test2.py stop weather.json prod
+$ python test2.py status weather.json prod
 container not running
 ```
 
