@@ -60,7 +60,7 @@ $ curl -s 172.17.8.102:8080 |grep learn
       <p>Now go ahead and learn how easy it is to create and run your own application <a href="http://docs.giantswarm.io/guides/your-first-application/">in your favorite language</a>.</p>
 
 $ python test2.py --action stop --cfgfile hello.json --environment prod
-$
+helloworld-service-helloworld-component.service stopped
 
 $ python test2.py --action status --cfgfile hello.json --environment prod
 container not running
@@ -101,7 +101,8 @@ $ curl 172.17.8.103:1337
 Hello World from Cologne: Sky is Clear
 
 $ python test2.py --action stop --cfgfile weather.json --environment dev
-$
+currentweather-service-flask.service stopped
+currentweather-service-redis.service stopped
 
 $ python test2.py --action status --cfgfile weather.json --environment dev
 container not running
@@ -110,4 +111,27 @@ $ fleetctl ssh 4a8f5edc 'etcdctl ls /domains --recursive'
 $
 ```
 
+Launch a second copy of the same container
 
+```
+$ python test2.py --action start --cfgfile hello.json --environment prod
+Unit helloworld-service-helloworld-component.service launched on 5a1b0a4b.../172.17.8.102
+
+$ python test2.py --action start --cfgfile hello.json --environment prod
+there is another copy of this app running
+please use the option --servicename to specify a different name
+
+$ python test2.py --action start --cfgfile hello.json --environment prod --servicename hello2
+Unit hello2-service-helloworld-component.service launched on 96ec90db.../172.17.8.101
+
+$ fleetctl list-units
+UNIT						MACHINE				ACTIVE	SUB
+hello2-service-helloworld-component.service	96ec90db.../172.17.8.101	active	running
+helloworld-service-helloworld-component.service	5a1b0a4b.../172.17.8.102	active	running
+
+$ python test2.py --action stop --cfgfile hello.json --environment prod --servicename hello2
+hello2-service-helloworld-component.service stopped
+
+$ python test2.py --action stop --cfgfile hello.json --environment prod
+helloworld-service-helloworld-component.service stopped
+```
