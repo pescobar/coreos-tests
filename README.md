@@ -3,7 +3,7 @@ basic help:
 ```
 $ python test2.py --help
 usage: test2.py [-h] [--action {start,stop,status}] --cfgfile CFGFILE
-                [--environment {prod,dev}]
+                [--environment {prod,dev}] [--servicename SERVICENAME]
 
 create and submit unit files to the coreOS cluster
 
@@ -15,6 +15,8 @@ optional arguments:
                         config file
   --environment {prod,dev}, -e {prod,dev}
                         choose the environment to use
+  --servicename SERVICENAME, -s SERVICENAME
+                        change the service name
 ```
 
 Environment. (To define metadata /etc/fleet/fleet.conf has been edited in each coreOS machine)
