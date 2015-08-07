@@ -6,6 +6,7 @@ import os
 import subprocess
 import json
 from jinja2 import Template
+import sys
 
 def main():
 
@@ -25,7 +26,18 @@ def main():
         components.append(component)
         #print component
 
+    if args.servicename:
+        old_service_name = service_name
+        service_name = args.servicename + '-service'
+
     if args.action == 'start':
+
+        # check if this service is already running
+        running_stdout, running_stderr, running_retcode = run_cmd('fleetctl list-units --no-legend | grep {0}'.format(service_name))
+        if running_stdout:
+            print "there is another copy of this app running"
+            print "please use the option --servicename to specify a different name"
+            sys.exit(0)
 
         components_to_launch = []
         for component in components:
@@ -33,6 +45,8 @@ def main():
             # do the replacement in the template
             template = Template(get_jinja2_template())
             component['environment'] = args.environment
+            if 'old_service_name' in locals():
+                component['conflicts'] = old_service_name
             if 'dependencies' in component.keys():
                 component['dependency_name'] = component['dependencies'][0]['name']
                 component['dependency_service_name'] = service_name + '-' + component['dependencies'][0]['name']
@@ -70,7 +84,7 @@ def main():
             #os.remove(service_filename)
 
     if args.action == 'status':
-        cmd = 'fleetctl list-units | grep {0}'.format(app_name)
+        cmd = 'fleetctl list-units | grep {0}'.format(service_name)
         stdout, stderr, retcode = run_cmd(cmd)
         if retcode == 1:
             print 'container not running'
@@ -81,6 +95,7 @@ def main():
         for component in components:
             cmd = 'fleetctl stop {0}-{1}.service'.format(service_name, component['component_name'])
             stdout, stderr, retcode = run_cmd(cmd)
+            print service_name + '-' + component['component_name'] + '.service stopped'
             cmd = 'fleetctl unload {0}-{1}.service'.format(service_name, component['component_name'])
             stdout, stderr, retcode = run_cmd(cmd)
             cmd = 'fleetctl destroy {0}-{1}.service'.format(service_name, component['component_name'])
@@ -91,6 +106,7 @@ def parse_input():
     parser.add_argument('--action', '-a', choices=['start', 'stop', 'status'], default='status', help='choose the desired action')
     parser.add_argument('--cfgfile', '-c', type=argparse.FileType('r'), help='config file', required = True)
     parser.add_argument('--environment', '-e', choices=['prod', 'dev'], default='prod', help='choose the environment to use')
+    parser.add_argument('--servicename', '-s', help='change the service name', required = False)
     return parser.parse_args()
 
 def get_jinja2_template():
@@ -123,6 +139,9 @@ ExecStopPost=/usr/bin/etcdctl rm --recursive /domains/%H:{{ ports }}
 MachineMetadata=env={{ environment }}
 {% if dependency_service_name is defined %}
 MachineOf={{ dependency_service_name }}.service
+{% endif %}
+{% if conflicts is defined %}
+Conflicts={{ conflicts }}*
 {% endif %}
 
 """
