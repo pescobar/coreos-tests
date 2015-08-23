@@ -33,7 +33,7 @@ def main():
     if args.action == 'start':
 
         # check if this service is already running
-        running_stdout, running_stderr, running_retcode = run_cmd('fleetctl list-units --no-legend | grep {0}'.format(service_name))
+        running_stdout, running_stderr, running_retcode = run_cmd('fleetctl list-units --no-legend | grep %s ' % (service_name))
         if running_stdout:
             print "there is another copy of this app running"
             print "please use the option --servicename to specify a different name"
@@ -56,7 +56,7 @@ def main():
             # write the unit file to disk
             # the unit file contains the service name defined in config file
             # I use the service name to "group" containers in pods
-            service_filename = '/tmp/{0}-{1}.service'.format(service_name, component['component_name'])
+            service_filename = '/tmp/%s-%s.service' % (service_name, component['component_name'])
             text_file = open(service_filename, "w")
             text_file.write(final_template)
             text_file.close()
@@ -73,7 +73,7 @@ def main():
         for unit_file in components_to_launch:
 
             # launch the unit file
-            cmd = 'fleetctl start {0}'.format(unit_file)
+            cmd = 'fleetctl start %s' % (unit_file)
             stdout, stderr, retcode = run_cmd(cmd)
             if retcode == 0:
                 print stdout
@@ -84,7 +84,7 @@ def main():
             #os.remove(service_filename)
 
     if args.action == 'status':
-        cmd = 'fleetctl list-units | grep {0}'.format(service_name)
+        cmd = 'fleetctl list-units | grep %s' % (service_name)
         stdout, stderr, retcode = run_cmd(cmd)
         if retcode == 1:
             print 'container not running'
@@ -93,12 +93,12 @@ def main():
 
     if args.action == 'stop':
         for component in components:
-            cmd = 'fleetctl stop {0}-{1}.service'.format(service_name, component['component_name'])
+            cmd = 'fleetctl stop %s-%s.service' % (service_name, component['component_name'])
             stdout, stderr, retcode = run_cmd(cmd)
             print service_name + '-' + component['component_name'] + '.service stopped'
-            cmd = 'fleetctl unload {0}-{1}.service'.format(service_name, component['component_name'])
+            cmd = 'fleetctl unload %s-%s.service' % (service_name, component['component_name'])
             stdout, stderr, retcode = run_cmd(cmd)
-            cmd = 'fleetctl destroy {0}-{1}.service'.format(service_name, component['component_name'])
+            cmd = 'fleetctl destroy %s-%s.service' % (service_name, component['component_name'])
             stdout, stderr, retcode = run_cmd(cmd)
 
 def parse_input():
