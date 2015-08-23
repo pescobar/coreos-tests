@@ -47,7 +47,7 @@ def main():
             component['environment'] = args.environment
             if 'old_service_name' in locals():
                 component['conflicts'] = old_service_name
-            if 'dependencies' in component.keys():
+            if 'dependencies' in component:
                 component['dependency_name'] = component['dependencies'][0]['name']
                 component['dependency_service_name'] = service_name + '-' + component['dependencies'][0]['name']
                 #print component['dependency_service_name']
@@ -63,7 +63,7 @@ def main():
 
             # save path to template files in components_to_launch[]
             # if the component has dependencies append it. If it has no dependencies insert it at beggining
-            if 'dependencies' in component.keys():
+            if 'dependencies' in component:
                components_to_launch.append(service_filename)
             else:
                 components_to_launch.insert(0, service_filename)
